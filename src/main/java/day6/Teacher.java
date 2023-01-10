@@ -33,7 +33,7 @@ public class Teacher {
                 est = "отлично";
                 break;
         }
-        System.out.println("Преподаватель " + name + " оценил студента с именем " + student.getName() + " на оценку " + est);
+        System.out.println("Преподаватель " + name + " оценил студента с именем " + student.getName() + " по предмету " + subject + " на оценку " + est);
 
     }
 }
