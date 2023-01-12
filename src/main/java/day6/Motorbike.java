@@ -29,10 +29,6 @@ public class Motorbike {
     }
 
     public int yearDifference(int inputYear){
-        int diff = inputYear - yearRelease;
-        if (diff < 0){
-            diff = diff * -1;
-        }
-        return diff;
+        return Math.abs(inputYear - yearRelease);
     }
 }

@@ -1,4 +1,4 @@
-package day6;
+package day7;
 
 public class Airplane {
 
@@ -19,6 +19,9 @@ public class Airplane {
     public void setLength(int length) {
         this.length = length;
     }
+    public int getLength() {
+        return length;
+    }
 
     public void setWeight(int weight) {
         this.weight = weight;
@@ -36,6 +39,7 @@ public class Airplane {
         this.year = year;
         this.length = length;
         this.weight = weight;
+        this.fuel = 0;
     }
 
     public void info(){
@@ -49,6 +53,17 @@ public class Airplane {
     public int fillUp(int n){
         fuel += n;
         return fuel;
+    }
+
+    public static void compareAirplanes(Airplane plane, Airplane plane1){
+        if (plane.getLength() > plane1.getLength()){
+            System.out.println("Самолёт " + plane.manufacturer + " длиннее");
+        } else if (plane.getLength() < plane1.getLength()) {
+            System.out.println("Самолёт " + plane1.manufacturer + " длиннее");
+        }else {
+            System.out.println("Длины самолётов равны.");
+        }
+        System.out.println();
     }
 
 

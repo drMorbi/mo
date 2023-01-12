@@ -13,11 +13,10 @@ public class Teacher {
     }
 
     private Random rand = new Random();
-    int max = 5, min = 2;
-    int rand_num = rand.nextInt(max - min + 1) + min;
 
     public void evaluate(Student student){
-        int estimation = rand_num;
+        int max = 5, min = 2;
+        int estimation = rand.nextInt(max - min + 1) + min;
         String est = null;
         switch (estimation){
             case 2:
