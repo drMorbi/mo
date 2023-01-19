@@ -36,6 +36,7 @@ public class Airplane {
         this.year = year;
         this.length = length;
         this.weight = weight;
+        this.fuel = 0;
     }
 
     public void info(){
@@ -46,12 +47,7 @@ public class Airplane {
                 "Количество топлива в баке: " + fuel);
     }
 
-    public int fillUp(int n){
+    public void fillUp(int n){
         fuel += n;
-        return fuel;
     }
-
-
-
-
 }
