@@ -7,7 +7,6 @@ public class MessageDatabase {
 
     private static List<Message>messages = new ArrayList<>();
 
-
     public static void addNewMessage(User send, User reciv, String text){
         messages.add(new Message(send, reciv, text));
     }

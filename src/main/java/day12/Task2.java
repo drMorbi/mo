@@ -9,16 +9,14 @@ public class Task2 {
 
         List<Integer> listInt = new ArrayList<>();
 
-        for (int i = 0; i <= 30; i++) {
-            if (i % 2 == 0)
-                listInt.add(i);
-        }
-
-        for (int i = 300; i <= 350; i++) {
-            if (i % 2 == 0)
-                listInt.add(i);
-
-        }
+        fillingList(0, 30, listInt);
+        fillingList(300, 350, listInt);
         System.out.println(listInt);
+    }
+    public static List<Integer> fillingList(int from, int to, List<Integer> listInt){
+        for (int i = from; i < to; i++) {
+            if (i % 2 ==0)
+                listInt.add(i);
+        }return listInt;
     }
 }

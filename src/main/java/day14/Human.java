@@ -43,13 +43,14 @@ public class Human {
                     throw new IOException();
 
                 person.add(new Human(personLine[0], Integer.parseInt(personLine[1])));
+                return person;
             }
         } catch (FileNotFoundException e) {
             System.out.println("Файл не найден");
         } catch (IOException e) {
             System.out.println("Некорректный входной файл");
-            return null;
-        }return person;
+
+        }return null;
     }
 
     @Override
