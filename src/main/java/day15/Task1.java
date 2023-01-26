@@ -21,11 +21,10 @@ public class Task1 {
             PrintWriter pw = new PrintWriter("E:\\zagruzki\\JavaMarathon2021\\JavaMarathon2021\\src\\main\\resources\\missing_shoes.txt", StandardCharsets.UTF_8);
             Scanner scan = new Scanner(file);
             if (!scan.hasNextLine())
-                throw new EmptyFileException();
+                throw new EmptyFileException("Файл пуст");
 
             while (scan.hasNextLine()) {
-                String str = scan.nextLine();
-                String[] shoesStr = str.split(";");
+                String[] shoesStr = scan.nextLine().split(";");
                 if (shoesStr.length != 3)
                     throw new IllegalAccessException();
 
@@ -39,7 +38,7 @@ public class Task1 {
         } catch (IllegalAccessException e) {
             System.out.println("Фйл некорректен");
         } catch (EmptyFileException e) {
-            System.out.println("Файл пуст");
+            System.out.println(e.getMessage());
         }
         return null;
     }

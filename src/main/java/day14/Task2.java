@@ -21,8 +21,6 @@ public class Task2 {
             Scanner scan = new Scanner(file);
             while (scan.hasNextLine()){
                 String nameAge = scan.nextLine();
-
-
                 String[] humans = nameAge.split(" ");
 
                 if (Integer.parseInt(humans[1]) < 0)
