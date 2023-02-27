@@ -1,55 +1,27 @@
 package SeaBattle;
 
 
-import java.util.Scanner;
+import java.util.*;
 
 public class Ship {
-    private int number;
-    private int coordX;
-    private int coordY;
-    private int decks;
+
+    private int x;
+    private int y;
     private boolean position;
-    private String design;
+    private final String design;
+    private String[] s;
+    private int currentDeck;
 
-    public Ship(int decks, int number) {
-        this.number = number;
-        this.decks = decks;
-        coordX = 0;
-        coordY = 0;
-        position = true;
+    LinkedHashMap<Integer, Integer> shipType1 = new LinkedHashMap<>();
+    List<Integer> xM = new ArrayList<>();
+    List<Integer> yM = new ArrayList<>();
+
+    public Ship() {
+
+        x = 0;
+        y = 0;
+        position = false;
         design = "\uD83D\uDEA2";
-    }
-
-    public int getCoordX() {
-        return coordX;
-    }
-
-    public void setCoordX(int coordX) {
-        this.coordX = coordX;
-    }
-
-    public int getCoordY() {
-        return coordY;
-    }
-
-    public void setCoordY(int coordY) {
-        this.coordY = coordY;
-    }
-
-    public int getDecks() {
-        return decks;
-    }
-
-    public void setDecks(int decks) {
-        this.decks = decks;
-    }
-
-    public boolean isPosition() {
-        return position;
-    }
-
-    public void setPosition(boolean position) {
-        this.position = position;
     }
 
     @Override
@@ -57,63 +29,189 @@ public class Ship {
         return design;
     }
 
-    public void setShip(String[][] ships) {
-        Ship ship1 = new Ship(1, 4);
-        Ship ship2 = new Ship(2, 3);
-        Ship ship3 = new Ship(3, 2);
-        Ship ship4 = new Ship(4, 1);
-        Ship[] shipType = {ship1, ship2, ship3, ship4};
+
+    private boolean checkCoordEnter(int x, int y) {
+
+        for (String sc : s) {
+            String[] coord = sc.split(",");
+            x = Integer.parseInt(coord[0]);
+            y = Integer.parseInt(coord[1]);
+            xM.add(x);
+            yM.add(y);
+        }
+
+        if (x < 0 || y < 0 || x > 9 || y > 9) {
+            System.out.println("Неверные координаты! Диапазон от 0 до 9!");
+            return false;
+        }
+
+        for (int i = 0; i < xM.size() - 1; i++) {
+            if (xM.get(i + 1) - xM.get(i) != 1 && !Objects.equals(xM.get(i + 1), xM.get(i))) {
+                System.out.println("Координаты должны идти последовательно");
+                xM.clear();
+                yM.clear();
+                return false;
+            }
+        }
+        for (int i = 0; i < yM.size() - 1; i++) {
+            if (yM.get(i + 1) - yM.get(i) != 1 && !Objects.equals(yM.get(i + 1), yM.get(i))) {
+                System.out.println("Координаты должны идти последовательно");
+                xM.clear();
+                yM.clear();
+                return false;
+            }
+        }
+
+        if (!valuesAscendEqual(yM) && !valuesEqualAscend(xM)) {
+
+            System.out.println("Только не диагональ!");
+            xM.clear();
+            yM.clear();
+            return false;
+        }
+        return true;
+    }
+
+    private boolean valuesEqualAscend(List<Integer> xM) {
+        for (int i = 0; i < xM.size() - 1; i++) {
+            if (xM.get(i + 1) - xM.get(i) == 1)
+                return false;
+        }
+        return true;
+    }
+
+    private boolean valuesAscendEqual(List<Integer> yM) {
+        for (int i = 0; i < yM.size() - 1; i++) {
+            if (yM.get(i + 1) - yM.get(i) == 1)
+                return false;
+        }
+        return true;
+    }
+
+    private void placementShips(String[][] ships) {
 
         Scanner scan = new Scanner(System.in);
+        boolean valid = false;
 
+        while (!valid) {
+            s = scan.nextLine().split(";");
 
-        for (Ship ship : shipType) {
-            System.out.println("Размещаем " + ship.decks + " палубный корабль");
-            System.out.println("Размести корабль: х у положение (true - горизонтально, false - вертикально");
+            if (s.length == currentDeck && checkCoordEnter(x, y)) {
+                for (String sc : s) {
+                    String[] coord = sc.split(",");
 
-            for (int k = 0; k < ship.number; k++) {
-                System.out.println("Осталось " + (ship.number - k) + " кораблей");
+                    x = Integer.parseInt(coord[0]);
+                    y = Integer.parseInt(coord[1]);
 
-                int validate;
-                do{
-                coordX = scan.nextInt();
-                coordY = scan.nextInt();
-                position = scan.nextBoolean();
+                    valid = checkShip(ships, x, y);
+                    if (!valid)
+                        continue;
 
-                validate = checkPlace(ships, coordX, coordY, position, decks);
-                if (validate != 0)
-                    System.out.println("Неверное расположение");
-                }while (validate != 0);
+                    ships[x][y] = design;
+                }
+                if (s.length != currentDeck) {
+                    System.out.println("Колическтво палуб введено неверно!");
+                    continue;
+                }
+            }
 
-                if (!position) {
-                    for (int x = 0; x < ship.decks; x++) {
-                        ships[coordX + x][coordY] = design;
-                    }
-                } else {
-                    for (int x = 0; x < ship.decks; x++) {
-                        ships[coordX][coordY + x] = design;
-                    }
+            if (valid) {
+
+                positionShip(xM, yM);
+                haloSecurity(ships, xM, yM, position);
+                xM.clear();
+                yM.clear();
+            }
+        }
+    }
+
+    private void positionShip(List<Integer> list1, List<Integer> list2) {
+
+        for (int i = 0; i < list1.size() - 1; i++) {
+            if (list1.get(i + 1) - list1.get(i) == 1) {
+                position = true;
+                break;
+            }
+        }
+        for (int i = 0; i < list2.size() - 1; i++) {
+            if (list2.get(i + 1) - list2.get(i) == 1) {
+                position = false;
+                break;
+            }
+        }
+    }
+
+    private boolean checkShip(String[][] playerShips, int x, int y) {
+        int minX = Math.max(0, x);
+        int minY = Math.max(0, y);
+        int maxX = Math.min(9, x);
+        int maxY = Math.min(9, y);
+
+        for (int i = minX; i <= maxX; i++) {
+            for (int j = minY; j <= maxY; j++) {
+                if (playerShips[i][j].equals("\uD83D\uDD39")) {
+                    System.out.println("Корабли не могут касаться друг друга!");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private void haloSecurity(String[][] playerShips, List<Integer> x, List<Integer> y, boolean position) {
+
+        int minX = Math.max(0, x.get(0) - 1);
+        int minY = Math.max(0, y.get(0) - 1);
+        int maxX = Math.min(9, x.get(x.size() - 1) + 1);
+        int maxY = Math.min(9, y.get(y.size() - 1) + 1);
+
+        for (int i = minX; i <= maxX; i++) {
+            for (int j = minY; j <= maxY; j++) {
+                if (playerShips[i][j].equals("⬜")) {
+                    playerShips[i][j] = "\uD83D\uDD39";
                 }
             }
         }
     }
 
+    public void setShip2(String[][] ships) {
+        shipType1.put(1, 4);
+        shipType1.put(2, 3);
+        shipType1.put(3, 2);
+        shipType1.put(4, 1);
 
-    private int checkPlace(String[][] playerShips, int coordX, int coordY, boolean position, int decks) {
-        if (coordX < 0 || coordY < 0 || coordX >= 10 || coordY >= 10) return 1;
-        if (position && coordY + decks >= 10) return 1;
-        if (!position && coordX + decks >= 10) return 1;
+        for (Map.Entry<Integer, Integer> entry : shipType1.entrySet()) {
+            System.out.print("Размещаем " + entry.getKey() + " палубный корабль. ");
+            switch (entry.getKey()) {
+                case 1:
+                    currentDeck = entry.getKey();
+                    System.out.println("Формат: x1,y1");
+                    break;
+                case 2:
+                    currentDeck = entry.getKey();
+                    System.out.println("Формат: x1,y1;x2,y2");
+                    break;
+                case 3:
+                    currentDeck = entry.getKey();
+                    System.out.println("Формат: x1,y1;x2,y2;x3,y3");
+                    break;
+                case 4:
+                    currentDeck = entry.getKey();
+                    System.out.println("Формат: x1,y1;x2,y2;x3,y3;x4,y4");
+                    break;
+            }
 
-        int minX = Math.max(0, coordX - 1);
-        int minY = Math.max(0, coordY - 1);
-        int maxX = Math.min(10 - 1, coordX + 1 + (!position ? decks : 0));
-        int maxY = Math.min(10 - 1, coordY + 1 + (position ? 0 : decks));
+            for (int k = 0; k < entry.getValue(); k++) {
+                if (entry.getValue() - k == 1)
+                    System.out.println("Остался " + (entry.getValue() - k) + " корабль");
+                if (entry.getValue() - k != 1) {
+                    System.out.println("Осталось " + (entry.getValue() - k) + " корабля");
+                }
 
-        for (int x = minX; x <= maxX; x++) {
-            for (int y = minY; y <= maxY; y++) {
-                if (playerShips[x][y].equals("\uD83D\uDEA2")) return 1;
+
+                placementShips(ships);
+
             }
         }
-        return 0;
     }
 }
