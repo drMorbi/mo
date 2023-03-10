@@ -9,8 +9,8 @@ public class Player {
     private String space = "⬜";
     private boolean destroy;
     public int health;
-    int x;
-    int y;
+    private int x;
+    private int y;
 
     public String[][] getPlayerShips() {
         return playerShips;
@@ -87,16 +87,6 @@ public class Player {
         if (destroy) {
             System.out.println("Потопил");
         } else System.out.println("Ранил");
-    }
-
-
-    public void printField() {
-        for (String[] playerShip : playerShips) {
-            for (int j = 0; j < playerShips.length; j++)
-                System.out.print(playerShip[j] + " ");
-
-            System.out.println();
-        }
     }
 
     public void printBattle() {

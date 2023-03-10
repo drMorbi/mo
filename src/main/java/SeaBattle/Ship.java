@@ -12,12 +12,11 @@ public class Ship {
     private String[] s;
     private int currentDeck;
 
-    LinkedHashMap<Integer, Integer> shipType1 = new LinkedHashMap<>();
-    List<Integer> xM = new ArrayList<>();
-    List<Integer> yM = new ArrayList<>();
+    private LinkedHashMap<Integer, Integer> shipType1 = new LinkedHashMap<>();
+    private List<Integer> xM = new ArrayList<>();
+    private List<Integer> yM = new ArrayList<>();
 
     public Ship() {
-
         x = 0;
         y = 0;
         position = false;
@@ -30,7 +29,12 @@ public class Ship {
     }
 
 
-    private boolean checkCoordEnter(int x, int y) {
+    private boolean checkCoordEnter(String[][] playerShips) {
+
+        int minX;
+        int minY;
+        int maxX;
+        int maxY;
 
         for (String sc : s) {
             String[] coord = sc.split(",");
@@ -38,7 +42,25 @@ public class Ship {
             y = Integer.parseInt(coord[1]);
             xM.add(x);
             yM.add(y);
+
+
+            minX = Math.max(0, x);
+            minY = Math.max(0, y);
+            maxX = Math.min(9, x);
+            maxY = Math.min(9, y);
+
+            for (int i = minX; i <= maxX; i++) {
+                for (int j = minY; j <= maxY; j++) {
+                    if (playerShips[i][j].equals("\uD83D\uDD39") || playerShips[i][j].equals(design)) {
+                        System.out.println("Место занято! Введи другие координаты.");
+                        xM.clear();
+                        yM.clear();
+                        return false;
+                    }
+                }
+            }
         }
+
 
         if (x < 0 || y < 0 || x > 9 || y > 9) {
             System.out.println("Неверные координаты! Диапазон от 0 до 9!");
@@ -69,6 +91,7 @@ public class Ship {
             yM.clear();
             return false;
         }
+
         return true;
     }
 
@@ -96,69 +119,31 @@ public class Ship {
         while (!valid) {
             s = scan.nextLine().split(";");
 
-            if (s.length == currentDeck && checkCoordEnter(x, y)) {
-                for (String sc : s) {
-                    String[] coord = sc.split(",");
-
-                    x = Integer.parseInt(coord[0]);
-                    y = Integer.parseInt(coord[1]);
-
-                    valid = checkShip(ships, x, y);
-                    if (!valid)
-                        continue;
-
-                    ships[x][y] = design;
-                }
-                if (s.length != currentDeck) {
-                    System.out.println("Колическтво палуб введено неверно!");
-                    continue;
-                }
+            if (s.length != currentDeck) {
+                System.out.println("Колическтво палуб введено неверно!");
+                continue;
             }
 
-            if (valid) {
+            valid = checkCoordEnter(ships);
+            if (!valid)
+                continue;
 
-                positionShip(xM, yM);
-                haloSecurity(ships, xM, yM, position);
-                xM.clear();
-                yM.clear();
+            for (String sc : s) {
+                String[] coord = sc.split(",");
+
+                x = Integer.parseInt(coord[0]);
+                y = Integer.parseInt(coord[1]);
+
+                ships[x][y] = design;
             }
+
+            haloSecurity(ships, xM, yM);
+            xM.clear();
+            yM.clear();
         }
     }
 
-    private void positionShip(List<Integer> list1, List<Integer> list2) {
-
-        for (int i = 0; i < list1.size() - 1; i++) {
-            if (list1.get(i + 1) - list1.get(i) == 1) {
-                position = true;
-                break;
-            }
-        }
-        for (int i = 0; i < list2.size() - 1; i++) {
-            if (list2.get(i + 1) - list2.get(i) == 1) {
-                position = false;
-                break;
-            }
-        }
-    }
-
-    private boolean checkShip(String[][] playerShips, int x, int y) {
-        int minX = Math.max(0, x);
-        int minY = Math.max(0, y);
-        int maxX = Math.min(9, x);
-        int maxY = Math.min(9, y);
-
-        for (int i = minX; i <= maxX; i++) {
-            for (int j = minY; j <= maxY; j++) {
-                if (playerShips[i][j].equals("\uD83D\uDD39")) {
-                    System.out.println("Корабли не могут касаться друг друга!");
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private void haloSecurity(String[][] playerShips, List<Integer> x, List<Integer> y, boolean position) {
+    private void haloSecurity(String[][] playerShips, List<Integer> x, List<Integer> y) {
 
         int minX = Math.max(0, x.get(0) - 1);
         int minY = Math.max(0, y.get(0) - 1);
@@ -202,16 +187,28 @@ public class Ship {
             }
 
             for (int k = 0; k < entry.getValue(); k++) {
-                if (entry.getValue() - k == 1)
+                if (entry.getValue() - k == 1) {
                     System.out.println("Остался " + (entry.getValue() - k) + " корабль");
+                    printField(ships);
+                }
                 if (entry.getValue() - k != 1) {
                     System.out.println("Осталось " + (entry.getValue() - k) + " корабля");
+                    printField(ships);
                 }
 
 
                 placementShips(ships);
 
             }
+        }
+    }
+
+    private void printField(String[][] playerShips) {
+        for (String[] playerShip : playerShips) {
+            for (int j = 0; j < playerShips.length; j++)
+                System.out.print(playerShip[j] + " ");
+
+            System.out.println();
         }
     }
 }
