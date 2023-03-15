@@ -7,7 +7,6 @@ public class Ship {
 
     private int x;
     private int y;
-    private boolean position;
     private final String design;
     private String[] s;
     private int currentDeck;
@@ -19,7 +18,6 @@ public class Ship {
     public Ship() {
         x = 0;
         y = 0;
-        position = false;
         design = "\uD83D\uDEA2";
     }
 
@@ -38,6 +36,13 @@ public class Ship {
 
         for (String sc : s) {
             String[] coord = sc.split(",");
+            try {
+                Integer.parseInt(coord[0]);
+                Integer.parseInt(coord[1]);
+            } catch (NumberFormatException e) {
+                System.out.println("Вводи только цифры!");
+                return false;
+            }
             x = Integer.parseInt(coord[0]);
             y = Integer.parseInt(coord[1]);
             xM.add(x);
